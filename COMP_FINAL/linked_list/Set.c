@@ -1,0 +1,163 @@
+// COMP1511 18s2 -- a Set ADT
+// Don't modify this file!
+
+#ifndef _SET_H_
+#define _SET_H_
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+struct node {
+    struct node *next;
+    int item;
+};
+
+struct _set {
+    struct node *set;
+};
+// Define a new `Set` type.
+typedef struct _set *Set;
+
+
+// Define an `item` type.  `Set` manipulates `item`s.
+typedef int item;
+
+// Create a new `Set`.
+Set newSet(void) {
+    Set new_set = malloc(sizeof(Set));
+    new_set->set = NULL;
+    return new_set;
+}
+
+// Release all resources associated with a `Set`.
+void destroySet(Set set) {
+    struct node *destroy = set->set;
+    while (destroy != NULL) {
+        struct node *temp = destroy;
+        destroy = destroy->next;
+        free(temp);
+    }
+    free(set);
+}
+
+bool setContains(Set s, item item) {
+    struct node *curr = s->set;
+    while (curr != NULL) {
+        if (curr->item == item) {
+            return true;
+        }
+        curr = curr->next;
+    }
+    return false;
+
+}
+// Add an `item` to the `Set`.
+void setAdd(Set s, item item) {
+    if (setContains(s, item)) {
+        return;
+    }
+    if (s->set == NULL) {
+        struct node *new = malloc(sizeof(struct node));
+        new->item = item;
+        new->next = NULL;
+        s->set = new;
+    } else {
+        struct node *new = malloc(sizeof(struct node));
+        new->item = item;
+        new->next = s->set;
+        new->next = s->set;
+        s->set = new; 
+    }
+
+}
+
+// Remove an `item` from the `Set`.
+void setRemove(Set s, item item) {
+    if (s->set == NULL) {
+        return;
+    }
+    struct node *curr = s->set;
+    struct node *prev = NULL;
+    while (curr != NULL) {
+        if (curr->item == item) {
+            if (prev == NULL) {
+                s->set = s->set->next;
+                curr = s->set;
+            } else {
+                prev->next = curr->next;
+                free(curr);
+                curr = prev->next;
+            }
+        } else{
+            prev = curr;
+            curr = curr->next;
+        }
+    }
+}
+
+// Does the `Set` contain this `item`?
+
+// How many items are in the `Set`?
+int setSize(Set s) {
+    struct node *curr = s->set;
+    int count = 0;
+    while (curr != NULL) {
+        count++;
+        curr = curr->next;
+    }
+    return count;
+}
+
+// Take the union of two sets(a â?ª b).
+Set setUnion(Set a, Set b) {
+    Set new = newSet();
+    struct node *aset = a->set;
+    struct node *bset = b->set;
+    while (aset != NULL) {
+        setAdd(new, aset->item);
+        aset = aset->next;
+    }
+    while (bset != NULL) {
+        setAdd(new, bset->item);
+        bset = bset->next;
+    }
+    return new;
+}
+
+// Take the intersection of two sets(a â?© b).
+Set setIntersection(Set a, Set b) {
+    struct node *set_b = b->set;
+    Set new = newSet();
+    while (set_b != NULL) {
+        if (setContains(a, set_b->item)) {
+            setAdd(new, set_b->item);
+        } else {
+            set_b = set_b->next;
+        }
+    }
+    return new;
+
+}
+
+// Is `a` a subset of `b`(a â?? b)?
+bool setSubset(Set a, Set b) {
+    struct node *set = a->set;
+    while (set != NULL) {
+        if (!setContains(b, set->item)) {
+            return false;
+        }
+        set = set->next;
+    }
+    return true;
+
+}
+
+// Is `a` equal to `b`(where a â?? b and b â?? a, a == b).
+bool setEqual(Set a, Set b) {
+    if (setSubset(a, b) && setSubset(b, a)) {
+        return true;
+    }
+    return false;
+}
+
+#endif // !defined(_SET_H_)

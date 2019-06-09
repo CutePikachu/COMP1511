@@ -1,0 +1,41 @@
+int identical(struct node *head1, struct node *head2) {
+    struct node *curr1 = head1;
+    struct node *curr2 = head2;
+    if (head1 == NULL && head2 == NULL) {
+        return 0;
+    }
+    while (curr1 != NULL && curr2 != NULL) {
+        if (curr1->data != curr2->data) 
+            return 0;
+        }
+        curr1 = curr1->next;
+        curr2 = curr2->next;
+    }
+    if (curr1 != NULL || curr2 != NULL) {
+        return 0;
+    }
+    return 1;
+}
+
+struct node *copy(struct node *head) {
+    if (head == NULL) {
+        return NULL;
+    }
+    struct node *curr = head;
+    struct node *copy = NULL;
+    while (curr != NULL) {
+        struct node *new = malloc(sizeof(struct node));
+        new->data = curr->data;
+        new->next = NULL;
+        struct node *temp = copy;
+        while (temp->next != NULL) {
+            temp = temp->next;
+        }
+        temp->next = new;
+        curr = curr->next;
+    }
+    return copy;
+
+}
+
+
